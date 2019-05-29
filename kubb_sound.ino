@@ -9,7 +9,7 @@ Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> SinOsc1(SIN2048_DATA);
 Smooth <long> Lag1(0.9975f);
 
 // Define global variables
-byte master = 100;
+byte master_volume = 200;
 byte gain;
 int freq;
 
@@ -36,15 +36,26 @@ void updateControl(){
   Serial.print("tilt = "); Serial.println(tilt);
 
   // map tilt to gain value and apply master volume
-  gain = map(tilt, 0, 1023, master, 0); 
+  //gain = map(tilt, 0, 1023, master_volume, 0); 
+
+  // threshold
+  int thres = 512;
+  if (tilt > thres)
+  {
+    gain = master_volume;
+  }
+  else
+  {
+    gain = 0;
+  }
   
   // read sensor value from A1 (range: 0...1023)
-  int light = mozziAnalogRead(1);
-  Serial.print("light = "); Serial.println(light);
+  //int light = mozziAnalogRead(1);
+  //Serial.print("light = "); Serial.println(light);
 
   // update frequency value
-  freq = map(light, 10, 500, 100, 1000);
-  SinOsc1.setFreq(freq);
+  //freq = map(light, 10, 500, 100, 1000);
+  //SinOsc1.setFreq(freq);
 }
 
 
