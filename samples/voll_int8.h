@@ -9,7 +9,7 @@
 #include <avr/pgmspace.h>
  
 #define voll_table_NUM_CELLS 7490
-#define voll_table_SAMPLERATE 600
+#define voll_table_SAMPLERATE 12000
  
 const int8_t __attribute__((section(".progmem.data"))) voll_table_DATA [] = {-1,
 -3, 0, 0, 0, -2, -1, 1, 6, 8, 6, -1, -6, -3, 1, 7, 7, 6, 2, -1, 0, 2, 2, 1, 2,

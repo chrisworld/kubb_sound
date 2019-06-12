@@ -14,18 +14,19 @@ byte gain;
 int freq;
 
 
-
 void setup() {
   // put your setup code here, to run once:
+
+  // start serial communication for debugging
+  //Serial.begin(115200); 
 
   // set oscillator frequency in Hz
   SinOsc1.setFreq(347);
 
-  // start serial communication (to print sensor values to serial monitor)
-  Serial.begin(115200); 
-
   // start mozzi core (and set control update rate in Hz)
   startMozzi(128); 
+
+  setupVolltreffer();
 }
 
 
@@ -34,10 +35,9 @@ void updateControl(){
 
   // read sensor value from A0 (range: 0...1023)
   int tilt = mozziAnalogRead(0); 
-  Serial.print("tilt = "); Serial.println(tilt);
-
-  // map tilt to gain value and apply master volume
-  //gain = map(tilt, 0, 1023, master_volume, 0); 
+  
+  // debug
+  //Serial.print("tilt = "); Serial.println(tilt);
 
   // threshold
   int thres = 512;
@@ -49,22 +49,24 @@ void updateControl(){
   {
     gain = 0;
   }
-  
-  // read sensor value from A1 (range: 0...1023)
-  //int light = mozziAnalogRead(1);
-  //Serial.print("light = "); Serial.println(light);
 
-  // update frequency value
-  //freq = map(light, 10, 500, 100, 1000);
-  //SinOsc1.setFreq(freq);
+  updateControlVolltreffer();
 }
 
 
 int updateAudio(){
   // put audio processing here (updated in audio rate)
   // this is where sound synthesis takes place
+
+  // call audio snyths
+  int hit = updateAudioVolltreffer();
+
+  // additive synthesis
+  int sound_synth = (SinOsc1.next() + hit);
+  //sound_synth = hit;
+
   // return next audio sample
-  return (Lag1.next(gain) * SinOsc1.next()) >> 8;
+  return (Lag1.next(gain) * sound_synth) >> 8;
 }
 
 
