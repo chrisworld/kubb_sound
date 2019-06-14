@@ -25,23 +25,17 @@
 // use: Sample <table_size, update_rate> SampleName (wavetable)
 Sample <voll_table_NUM_CELLS, AUDIO_RATE> aSample(voll_table_DATA);
 
-// for scheduling sample start
-EventDelay kTriggerDelay;
-
 void setupVolltreffer()
 {
   // play at the speed it was recorded
-  aSample.setFreq((float) voll_table_SAMPLERATE / (float) voll_table_NUM_CELLS); 
-
-  // 1500 msec countdown, within resolution of CONTROL_RATE
-  kTriggerDelay.set(1500); 
+  aSample.setFreq((float) voll_table_SAMPLERATE / (float) voll_table_NUM_CELLS);
 }
 
 
-void updateControlVolltreffer(){
-  if(kTriggerDelay.ready()){
+void updateControlVolltreffer(boolean play_samples){
+  if(play_samples)
+  {
     aSample.start();
-    kTriggerDelay.start();
   }
 }
 

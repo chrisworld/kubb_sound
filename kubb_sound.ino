@@ -5,28 +5,27 @@
 
 // Define oscillators, filters, etc.:
 // usage: Oscil <table_size, update_rate> name(wavetable)
-Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> SinOsc1(SIN2048_DATA);
 Smooth <long> Lag1(0.9975f);
 
-// Define global variables
+// define volume settings
 byte master_volume = 200;
-byte gain;
+byte volume_tower = 100;
+byte volume_hit = 200;
+
+// tilt shift
+boolean tilt_shift = false;
+
 int freq;
 
 
-void setup() {
-  // put your setup code here, to run once:
-
-  // start serial communication for debugging
-  //Serial.begin(115200); 
-
-  // set oscillator frequency in Hz
-  SinOsc1.setFreq(347);
+void setup() 
+{
+  // setup
+  setupP1();
+  setupVolltreffer();
 
   // start mozzi core (and set control update rate in Hz)
   startMozzi(128); 
-
-  setupVolltreffer();
 }
 
 
@@ -43,14 +42,26 @@ void updateControl(){
   int thres = 512;
   if (tilt > thres)
   {
-    gain = master_volume;
+    if (!tilt_shift)
+    {
+      tilt_shift = true;
+    }
+    //gain = master_volume;
   }
   else
   {
-    gain = 0;
+    if (tilt_shift)
+    {
+      // volltreffer sample
+      updateControlVolltreffer(tilt_shift);
+      tilt_shift = false;
+    }
   }
 
-  updateControlVolltreffer();
+  // Tower samples
+  updateControlP1(tilt);
+  //updateControlP2(tilt);
+  //updateControlKing(tilt);
 }
 
 
@@ -60,13 +71,14 @@ int updateAudio(){
 
   // call audio snyths
   int hit = updateAudioVolltreffer();
+  int p1_tower = updateAudioP1() * volume_tower;
 
   // additive synthesis
-  int sound_synth = (SinOsc1.next() + hit);
+  int sound_synth = (p1_tower + hit);
   //sound_synth = hit;
 
   // return next audio sample
-  return (Lag1.next(gain) * sound_synth) >> 8;
+  return (Lag1.next(master_volume) * sound_synth) >> 8;
 }
 
 
