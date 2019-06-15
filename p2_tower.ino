@@ -26,14 +26,14 @@
 #include <EventDelay.h>
 #include <ADSR.h>
 
-#include <tables/triangle_warm8192_int8.h>
+#include <tables/saw8192_int8.h>
 
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
 #include <Smooth.h>
 
 // Setup Oscillator
-Oscil <8192, AUDIO_RATE> triOscil(TRIANGLE_WARM8192_DATA);
+Oscil <8192, AUDIO_RATE> sawOscil(SAW8192_DATA);
 
 // for triggering the envelope
 EventDelay noteDelayP2;
@@ -41,11 +41,34 @@ EventDelay noteDelayP2;
 // ADSR
 ADSR <AUDIO_RATE, AUDIO_RATE> envP2;
 
+// rythm
+//int rythmP2[] = {500, 250, 375, 250, 250};
+int rythmP2[] = {250, 375, 250, 375, 375};
+
+int r2_max = 5;
+int r2 = 0;
 
 // setup P2 sound
-void setupP2(){
+void setupP2()
+{
   randSeed();
-  noteDelayP2.set(2000);
+  noteDelayP2.set(100);
+
+  // choose envelope levels
+  byte attack_level = 200;
+  byte decay_level = 200;
+
+  // set envelope params
+  int attack = 50;
+  int decay = 50;
+  int sustain = 100;
+  int release_ms = 50;
+  
+  // set ad levels
+  envP2.setADLevels(attack_level, decay_level);
+
+  // set envelope
+  envP2.setTimes(attack, decay, sustain, release_ms);
 }
 
 
@@ -56,32 +79,39 @@ void updateControlP2()
 
   if (noteDelayP2.ready())
   {
-    // choose envelope levels
-    byte attack_level = 200;
-    byte decay_level = 200;
-    envP2.setADLevels(attack_level, decay_level);
+    byte midi_note;
 
-    // generate a random new adsr time parameter value in milliseconds
-    unsigned int new_value = rand(300) + 100;
+    // reset index of rythm
+    if (r2 > r2_max)
+    {
+      r2 = 0;
+    }
 
-    // set envelope params
-    attack = 50;
-    decay = 100;
-    sustain = 300;
-    release_ms = 100;
+    int time_delay = rythmP2[r2];
+    r2++;
 
-    // set envelope
-    envP2.setTimes(attack, decay, sustain, release_ms);
+    // on set of envelope
     envP2.noteOn();
 
-    // midi note
-    byte midi_note = 80;
+    // tilted
+    if (tower_standing)
+    {
+      // midi note
+      midi_note = 62;
+      time_delay = time_delay * 1.5;
+    }
+    else
+    {
+      // midi note
+      midi_note = 50;
+      time_delay = time_delay * 2;
+    }
 
     // set freq
-    triOscil.setFreq((int)mtof(midi_note));
+    sawOscil.setFreq((int)mtof(midi_note));
 
     // restart note after played
-    noteDelayP2.start(attack + decay + sustain + release_ms);
+    noteDelayP2.start(time_delay);
   }
 }
 
@@ -90,5 +120,5 @@ void updateControlP2()
 int updateAudioP2()
 {
   envP2.update();
-  return (int) (envP2.next() * triOscil.next()) >> 8;
+  return (int) (envP2.next() * sawOscil.next()) >> 8;
 }

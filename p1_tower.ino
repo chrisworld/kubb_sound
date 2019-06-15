@@ -41,47 +41,76 @@ EventDelay noteDelayP1;
 // ADSR
 ADSR <AUDIO_RATE, AUDIO_RATE> envP1;
 
+// rythm
+int rythmP1[] = {500, 250, 500, 250};
+int r_max = 4;
+//int rythmP1[] = {750, 375, 375};
+//int r_max = 3;
+
+int r1 = 0;
 
 // setup P1 sound
-void setupP1(){
+void setupP1()
+{
   randSeed();
-  noteDelayP1.set(2000);
+  noteDelayP1.set(100);
+
+  // choose envelope levels
+  byte attack_level = 200;
+  byte decay_level = 200;
+
+  // set envelope params
+  int attack = 50;
+  int decay = 50;
+  int sustain = 100;
+  int release_ms = 50;
+  
+  // set ad levels
+  envP1.setADLevels(attack_level, decay_level);
+
+  // set envelope
+  envP1.setTimes(attack, decay, sustain, release_ms);
 }
 
 
 // update Tower of P1
 void updateControlP1()
 {
-  unsigned int duration, attack, decay, sustain, release_ms;
-
   if (noteDelayP1.ready())
   {
-    // choose envelope levels
-    byte attack_level = 200;
-    byte decay_level = 200;
-    envP1.setADLevels(attack_level, decay_level);
+    byte midi_note;
 
-    // generate a random new adsr time parameter value in milliseconds
-    unsigned int new_value = rand(300) + 100;
+    // reset index of rythm
+    if (r1 >= r_max)
+    {
+      r1 = 0;
+    }
 
-    // set envelope params
-    attack = 50;
-    decay = 100;
-    sustain = 300;
-    release_ms = 100;
+    int time_delay = rythmP1[r1];
+    r1++;
 
-    // set envelope
-    envP1.setTimes(attack, decay, sustain, release_ms);
+    // on set of envelope
     envP1.noteOn();
 
-    // midi note
-    byte midi_note = 80;
+    // tilted
+    if (tower_standing)
+    {
+      // midi note
+      midi_note = 66;
+      time_delay = time_delay * 1.5;
+    }
+    else
+    {
+      // midi note
+      midi_note = 54;
+      time_delay = time_delay * 2;
+    }
 
     // set freq
     squareOscil.setFreq((int)mtof(midi_note));
 
     // restart note after played
-    noteDelayP1.start(attack + decay + sustain + release_ms);
+    noteDelayP1.start(time_delay);
   }
 }
 

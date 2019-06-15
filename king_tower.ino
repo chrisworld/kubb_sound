@@ -26,14 +26,14 @@
 #include <EventDelay.h>
 #include <ADSR.h>
 
-#include <tables/saw8192_int8.h>
+#include <tables/triangle_warm8192_int8.h>
 
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
 #include <Smooth.h>
 
 // Setup Oscillator
-Oscil <8192, AUDIO_RATE> sawOscil(SAW8192_DATA);
+Oscil <8192, AUDIO_RATE> triOscil(TRIANGLE_WARM8192_DATA);
 
 // for triggering the envelope
 EventDelay noteDelayKing;
@@ -41,11 +41,31 @@ EventDelay noteDelayKing;
 // ADSR
 ADSR <AUDIO_RATE, AUDIO_RATE> envKing;
 
+// rythm
+int rythmKing[] = {250, 250, 250, 250, 500};
+int rk = 0;
 
 // setup sound
-void setupKing(){
+void setupKing()
+{
   randSeed();
-  noteDelayKing.set(2000);
+  noteDelayKing.set(100);
+
+  // choose envelope levels
+  byte attack_level = 200;
+  byte decay_level = 200;
+
+  // set envelope params
+  int attack = 50;
+  int decay = 50;
+  int sustain = 100;
+  int release_ms = 50;
+  
+  // set ad levels
+  envKing.setADLevels(attack_level, decay_level);
+
+  // set envelope
+  envKing.setTimes(attack, decay, sustain, release_ms);
 }
 
 
@@ -56,32 +76,38 @@ void updateControlKing()
 
   if (noteDelayKing.ready())
   {
-    // choose envelope levels
-    byte attack_level = 200;
-    byte decay_level = 200;
-    envKing.setADLevels(attack_level, decay_level);
+    byte midi_note;
 
-    // generate a random new adsr time parameter value in milliseconds
-    unsigned int new_value = rand(300) + 100;
+    // reset index of rythm
+    if (rk >= 5)
+    {
+      rk = 0;
+    }
 
-    // set envelope params
-    attack = 50;
-    decay = 100;
-    sustain = 300;
-    release_ms = 100;
+    int time_delay = rythmKing[rk];
+    rk++;
 
-    // set envelope
-    envKing.setTimes(attack, decay, sustain, release_ms);
+    // on set of envelope
     envKing.noteOn();
 
-    // midi note
-    byte midi_note = 80;
+    // tilted
+    if (tower_standing)
+    {
+      // midi note
+      midi_note = 69;
+    }
+    else
+    {
+      // midi note
+      midi_note = 57;
+      time_delay = time_delay * 2;
+    }
 
     // set freq
-    sawOscil.setFreq((int)mtof(midi_note));
+    triOscil.setFreq((int)mtof(midi_note));
 
     // restart note after played
-    noteDelayKing.start(attack + decay + sustain + release_ms);
+    noteDelayKing.start(time_delay);
   }
 }
 
@@ -90,5 +116,5 @@ void updateControlKing()
 int updateAudioKing()
 {
   envKing.update();
-  return (int) (envKing.next() * sawOscil.next()) >> 8;
+  return (int) (envKing.next() * triOscil.next()) >> 8;
 }

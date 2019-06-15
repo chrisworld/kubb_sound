@@ -6,9 +6,11 @@
 Smooth <long> Lag1(0.9975f);
 
 // define volume settings
-byte master_volume = 100;
-byte volume_tower = 50;
-byte volume_hit = 200;
+byte master_volume = 255;
+byte volume_tower = 255;
+byte volume_hit = 255;
+
+byte volume_tower_down = 100;
 
 // tilt shift
 boolean tilt_shift = false;
@@ -21,9 +23,9 @@ boolean tower_standing = true;
 void setup() 
 {
   // setup
-  setupP1();
+  //setupP1();
   //setupP2();
-  //setupKing();
+  setupKing();
   setupVolltreffer();
 
   // start mozzi core (and set control update rate in Hz)
@@ -46,11 +48,6 @@ void updateControl()
     // Tower is standing
     tower_standing = true;
 
-    // update tower sounds
-    updateControlP1();
-    //updateControlP2();
-    //updateControlKing();
-
     // Tower falls
     tilt_shift = false;
   }
@@ -69,6 +66,12 @@ void updateControl()
       updateControlVolltreffer(tilt_shift);
     }
   }
+
+  
+  // update tower sounds
+  //updateControlP1();
+  //updateControlP2();
+  updateControlKing();
 }
 
 
@@ -79,15 +82,20 @@ int updateAudio()
   // hit sound
   int hit = (updateAudioVolltreffer() * volume_hit) >> 8;
 
-  // tower sound
-  int tower = 0;
+  int tower;
   if (tower_standing)
   {
-    tower = (updateAudioP1() * volume_tower) >> 8;
+    //tower = (updateAudioP1() * volume_tower) >> 8;
     //tower = (updateAudioP2() * volume_tower) >> 8;
-    //tower = (updateAudioKing() * volume_tower) >> 8;
+    tower = (updateAudioKing() * volume_tower) >> 8;
   }
-   
+  else
+  {
+    //tower = (updateAudioP1() * volume_tower_down) >> 8;
+    //tower = (updateAudioP2() * volume_tower_down) >> 8;
+    tower = (updateAudioKing() * volume_tower_down) >> 8;
+  }
+  
   // additive synthesis
   int sound_synth = (tower + hit);
 
