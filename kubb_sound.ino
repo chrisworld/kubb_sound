@@ -1,27 +1,29 @@
 #include <MozziGuts.h>
 #include <Oscil.h>
 #include <Smooth.h>
-#include <tables/sin2048_int8.h>
 
-// Define oscillators, filters, etc.:
-// usage: Oscil <table_size, update_rate> name(wavetable)
+// smoothing for safety
 Smooth <long> Lag1(0.9975f);
 
 // define volume settings
-byte master_volume = 200;
-byte volume_tower = 100;
+byte master_volume = 100;
+byte volume_tower = 50;
 byte volume_hit = 200;
 
 // tilt shift
 boolean tilt_shift = false;
 
-int freq;
+// tower_standing
+boolean tower_standing = true;
 
 
+// Setup Synths
 void setup() 
 {
   // setup
   setupP1();
+  //setupP2();
+  //setupKing();
   setupVolltreffer();
 
   // start mozzi core (and set control update rate in Hz)
@@ -29,61 +31,72 @@ void setup()
 }
 
 
-void updateControl(){
-  // put changing controls here (are updated in control update rate)
-
-  // read sensor value from A0 (range: 0...1023)
+// update Controls
+void updateControl()
+{
+  // read tilt sensor
   int tilt = mozziAnalogRead(0); 
   
-  // debug
-  //Serial.print("tilt = "); Serial.println(tilt);
-
   // threshold
   int thres = 512;
+
+  // tower stands
   if (tilt > thres)
   {
-    if (!tilt_shift)
-    {
-      tilt_shift = true;
-    }
-    //gain = master_volume;
-  }
-  else
-  {
-    if (tilt_shift)
-    {
-      // volltreffer sample
-      updateControlVolltreffer(tilt_shift);
-      tilt_shift = false;
-    }
+    // Tower is standing
+    tower_standing = true;
+
+    // update tower sounds
+    updateControlP1();
+    //updateControlP2();
+    //updateControlKing();
+
+    // Tower falls
+    tilt_shift = false;
   }
 
-  // Tower samples
-  updateControlP1(tilt);
-  //updateControlP2(tilt);
-  //updateControlKing(tilt);
+  // tower is down
+  else
+  {
+    // tower is lying
+    tower_standing = false;
+
+    // hit sound
+    if (!tilt_shift)
+    {
+      // play hit sound once
+      tilt_shift = true;
+      updateControlVolltreffer(tilt_shift);
+    }
+  }
 }
 
 
-int updateAudio(){
-  // put audio processing here (updated in audio rate)
-  // this is where sound synthesis takes place
+// update Audio
+int updateAudio()
+{
+  // call audio snyths and mix them
+  // hit sound
+  int hit = (updateAudioVolltreffer() * volume_hit) >> 8;
 
-  // call audio snyths
-  int hit = updateAudioVolltreffer();
-  int p1_tower = updateAudioP1() * volume_tower;
-
+  // tower sound
+  int tower = 0;
+  if (tower_standing)
+  {
+    tower = (updateAudioP1() * volume_tower) >> 8;
+    //tower = (updateAudioP2() * volume_tower) >> 8;
+    //tower = (updateAudioKing() * volume_tower) >> 8;
+  }
+   
   // additive synthesis
-  int sound_synth = (p1_tower + hit);
-  //sound_synth = hit;
+  int sound_synth = (tower + hit);
 
   // return next audio sample
   return (Lag1.next(master_volume) * sound_synth) >> 8;
 }
 
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  // don't put anything else here
+void loop() 
+{
   audioHook();
 }
