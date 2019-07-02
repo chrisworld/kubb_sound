@@ -1,7 +1,7 @@
 # kubb_sound
 kubb_sound was a university project of the game Kubb played with sounds to locate the towers. The game had been designed and developed during the Seminar "Sound Interaction Design" at TU / KUG Graz.
 
-![alt text](https://raw.githubusercontent.com/chrisworld3/kubb_sound/master/imgages/kubb1.jpg)
+![alt text](https://raw.githubusercontent.com/chrisworld/kubb_sound/master/imgages/kubb1.jpg)
 
 ## Motivation
 Our motivation was to create an audible game, that can be played blind only relying on audio cues. We therefore went over many different existing game ideas and came upon Kubb, a fun game that can be played outside with at least two players challenging each other throwing wooden rods at towers. We were the opinion that it is possible to play this game merely with audio sources to locate the towers. Therefore this game should be accessed to blind people and to everyone who enjoy the challenge playing Kubb without vision. 
@@ -73,5 +73,5 @@ We used the Mozzi library from https://github.com/sensorium/Mozzi/
 and implemented the ADSR from the examples.
 
 ## Acknowledgment
-Special thanks to Marian Weger and Katharina Groß-Vogt for their technical and financial support to create this project.
+Special thanks to Marian Weger and Katharina Groß-Vogt for their technical and financial support to create this project. And special thanks to our unknown young friend for play testing as well as our dear colleagues.
 
