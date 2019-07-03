@@ -1,5 +1,5 @@
 # kubb_sound
-kubb_sound was a university project of the game Kubb played with sounds to locate the towers. The game had been designed and developed during the Seminar "Sound Interaction Design" at TU / KUG Graz.
+kubb_sound was a university project of the game Kubb played with sounds to locate the towers. The game had been designed and developed during the Seminar "Sonic Interaction Design" at TU / KUG Graz.
 
 ![alt text](https://raw.githubusercontent.com/chrisworld/kubb_sound/master/images/kubb1.jpg)
 
@@ -73,5 +73,5 @@ We used the Mozzi library from https://github.com/sensorium/Mozzi/
 and implemented the ADSR from the examples.
 
 ## Acknowledgment
-Special thanks to Marian Weger and Katharina Groß-Vogt for their technical and financial support to create this project. And special thanks to our unknown young friend for play testing as well as our dear colleagues.
+Special thanks to Marian Weger and Katharina Groß-Vogt for their technical and financial support to create this project. And special thanks to our unknown young friend for play testing, as well as our dear colleagues.
 
