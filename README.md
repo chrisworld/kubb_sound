@@ -10,7 +10,7 @@ Our motivation was to create an audible game, that can be played blind only rely
 ### Game Design
 We first laid out the detailed game design with regard to the original game, so that it was playable only with audio sources. At each situation and game state the players need to know where the towers are placed and if they are standing or lying, in case one of the towers was hit by the throw of the rod. At this point we decided to implement following Audio cues:
 - Each tower should get its own distinctive sound characteristic
-- When a tower is hit an audio cue should be played
+- When a tower is hit a audio cue should be played
 - Towers that are lying flat on the ground need to be distinguished by towers that are standing upright
 
 ### Sound Design
@@ -19,26 +19,26 @@ The distinctive sound characteristics are composed of:
 - Each Tower on each side has an own pitch
 - Each Tower has a distinctive rhythm pattern
 
-We decided that the Player 1 side towers have a square waveform and the Player 2 have a square. This two waveforms an acoustic color which makes it easy to locate them. The King tower however receives an triangle waveform, which is a bit more difficult to locate, since there are less harmonics.
+We decided that the player 1 side towers have a saw waveform and the player 2 a square. This two waveforms acoustic color, makes it easy to locate them. The King tower however receives a triangle waveform, which is a bit more difficult to locate, since there are less harmonics.
 The different tower tone pitches should raise a triad accord, so that the sounds are not too annoying for the players.
-Also the different rhythm patterns are great means to locate different sounds. With the distinctive pitch and rhythm the sound sources can be detected like in a cocktail party. For the ADSR we used for each tower the same setting:
+Also the different rhythm patterns are great means to locate different sound sources. With the distinctive pitch and rhythm patterns the sound sources can be detected by their location, this is similar to the cocktail party effect. For the ADSR we used for each tower the same setting:
 - attack = 50ms
 - decay = 50ms
 - sustain = 100ms
 - release = 50ms
 
 For the hit sound we made a voice recording of "Volltreffer" and pitched it to a funny high frequency.
-When one player hits one of the towers with the rod and the tower is then lying flat on the ground, the rhythm should slow down by half, the frequency shifts an octave lower and the volume is turned down more than the half. This makes the fallen tower less present in the game, but still enough to find and pick him up again.
+When one player hits one of the towers with the rod and the tower is then lying flat on the ground, the rhythm should slow down by half, the frequency shifts an octave lower and the volume is turned down more than the half. This makes the fallen tower less present in the game, but still enough to find and pick it up again.
 
 ### Technical Design
-Each Tower needed to be equipped with an audio source, therefore we used following components for each tower
+Each Tower needed to be equipped with a audio source, therefore we used following components for each tower:
 - Arduino SparkFun Board integrating with a lightweight microprocessor 
-- Power supply with a 9V Batteries
+- Power supply with 9V Batteries
 - Tilt Sensor to indicate if the tower is lying flat on the ground
 - Sound Speakers
 - Mechanical Protection against the wooden rod
 
-The mechanical protection was merely made by metal cans, where everything was placed in safely.
+The mechanical protection was merely made by metal cans, where everything was placed in safely. For the first prototyp we used only three towers, a player 1 tower, a player 2 tower and a king tower.
 
 ## Conclusion
 --TODO
